@@ -20,7 +20,7 @@
 
         public int GetReflectorOutput(int input)
         {
-            return this.output[input];
+            return this.output[input - 1];
         }
     }
 }

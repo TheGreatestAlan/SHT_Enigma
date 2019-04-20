@@ -67,7 +67,7 @@ namespace Enigma_Console
                 correctedInput -= 26;
             }
 
-            return output[correctedInput];
+            return output[correctedInput - 1];
         }
 
         /*Once the electrical signal has reached the machine's reflector, it is then routed "backwards" through the
@@ -83,7 +83,7 @@ namespace Enigma_Console
 
             /* Since the inverse of the input-output relationship is required, finding the index of the reflected input
              * in the output array will give the required result */
-            return Array.IndexOf(this.output, correctedInput);
+            return Array.IndexOf(this.output, (correctedInput - 1));
         }
     }
 }
