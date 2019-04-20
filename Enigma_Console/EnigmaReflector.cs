@@ -13,8 +13,8 @@
             
             foreach (int[] pairing in pairings)
             {
-                output[pairing[0]] = pairing[1];
-                output[pairing[1]] = pairing[0];
+                this.output[pairing[0] - 1] = pairing[1];
+                this.output[pairing[1] - 1] = pairing[0];
             }
         }
 
