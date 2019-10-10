@@ -1,24 +1,52 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Enigma_Console
 {
     class EnigmaRotor
     {
-        private readonly int[] output;
-        private readonly int[] advancePositions;
-        private int currentPosition;
+        private Dictionary<char, char> outputMapping;
+        private Dictionary<char, char> reflectedOutputMapping;
+        private Dictionary<char, bool> advancePositions;
+        private char currentPosition;
+        private readonly static int ALPHABET_LENGTH = 26;
 
-        public EnigmaRotor(int[] output, int[] advancePositions)
+        public EnigmaRotor(char[] outputOrder, char[] advancePositions)
         {
-            this.output = output;
-            this.advancePositions = advancePositions;
-            this.SetPosition(0);
+            this.outputMapping = new Dictionary<char, char>();
+            for (int i =0; i < ALPHABET_LENGTH; i += 1)
+            {
+                char currentLetter = (char) (65 + i); // C-style character casting
+                this.outputMapping.Add(currentLetter, outputOrder[i]);
+            }
+
+            this.reflectedOutputMapping = new Dictionary<char, char>();
+            for (int i = 0; i < ALPHABET_LENGTH; i += 1)
+            {
+                char currentLetter = (char)(65 + i); // C-style character casting
+                this.reflectedOutputMapping.Add(outputOrder[i], currentLetter);
+            }
+
+            this.advancePositions = new Dictionary<char, bool>();
+            for (int i = 0; i < ALPHABET_LENGTH; i += 1)
+            {
+                char currentLetter = (char)(65 + i); // C-style character casting
+                if (Array.IndexOf(advancePositions, currentLetter) != -1)
+                {
+                    this.advancePositions.Add(currentLetter, true);
+                }
+                else
+                {
+                    this.advancePositions.Add(currentLetter, false);
+                }
+            }
+            this.SetPosition('A');
         }
 
         /* This method allows the rotor's position to be manually set to a specific value. If using the machine "per
          * procedure", this should only be used when setting up the machine's initial configuration, prior to encrypting
          * or decrypting, and should not be used again until the process is complete */
-        public void SetPosition(int newPosition)
+        public void SetPosition(char newPosition)
         {
             this.currentPosition = newPosition;
         }
@@ -33,57 +61,50 @@ namespace Enigma_Console
          * there will be an off-by-one error in your rotor stepover */
         public bool DetermineIfNextRotorShouldAdvance()
         {
-            if (Array.IndexOf(this.advancePositions, this.currentPosition) != -1)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return this.advancePositions[this.currentPosition];
         }
 
         /* In order to get the proper rotor stepover behavior, ensure that you call this method AFTER checking whether
          * the next rotor in line should be advanced */
         public void AdvanceRotor()
         {
-            this.currentPosition += 1;
+            int nextPosition = 1 + (int)this.currentPosition;
 
-            if (this.currentPosition > 25)
+            if (nextPosition > (int)'Z')
             {
-                this.currentPosition = 0;
+                nextPosition = (int)'A';
             }
+
+            this.currentPosition = (char)nextPosition;
         }
 
-        public int GetRotorOutput(int input)
+        public char GetRotorOutput(char input)
         {
             /* The input to the rotor must be "corrected" based on the rotor's current position. For example, if the
              * rotor is set to 'A', then the 'A' output of the adjacent rotor is wired to the 'A' input of this rotor,
              * and no correction is required. However, if this rotor is set to 'D', then the 'A' output of the adjacent
              * rotor is actually wired to the 'D' input of this rotor. */
-            int correctedInput = input + this.currentPosition;
-            if (correctedInput > 25)
+            int correctedInput = (int)input + ((int)this.currentPosition - 65);
+            if (correctedInput > (int)'Z')
             {
                 correctedInput -= 26;
             }
 
-            return output[correctedInput - 1];
+            return this.outputMapping[(char)correctedInput];
         }
 
         /*Once the electrical signal has reached the machine's reflector, it is then routed "backwards" through the
          * machine's rotors and to the output. This reverses the sunbtitution cypher of the rotor */
-        public int GetReflectedOutput(int input)
+        public char GetReflectedOutput(char reflectedInput)
         {
-            // Just as with the non-reflected output, the input must be "corrected" based on the rotor's position
-            int correctedInput = input + this.currentPosition;
-            if (correctedInput > 25)
+            /* Just as with the normal input, this must be corrected for the rotor's actual position */
+            int correctedReflectedInput = (int)reflectedInput + ((int)this.currentPosition - 65);
+            if (correctedReflectedInput > (int)'Z')
             {
-                correctedInput -= 26;
+                correctedReflectedInput -= 26;
             }
 
-            /* Since the inverse of the input-output relationship is required, finding the index of the reflected input
-             * in the output array will give the required result */
-            return Array.IndexOf(this.output, (correctedInput - 1));
+            return this.reflectedOutputMapping[(char)correctedReflectedInput];
         }
     }
 }
