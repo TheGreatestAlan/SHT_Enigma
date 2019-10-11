@@ -97,9 +97,9 @@ namespace Enigma_Console
              * (uncorrected) 'A' input. */
 
             int correctedOutput = (int)output - ((int)this.currentPosition - CAPITAL_LETTER_CHAR_OFFSET);
-            if (correctedOutput > (int)'Z')
+            if (correctedOutput < (int)'A')
             {
-                correctedOutput -= ALPHABET_LENGTH;
+                correctedOutput += ALPHABET_LENGTH;
             }
 
             return (char)correctedOutput;
@@ -119,9 +119,9 @@ namespace Enigma_Console
             int reflectedOutput = this.reflectedOutputMapping[(char)correctedReflectedInput];
 
             int correctedReflectedOutput = (int)reflectedOutput - ((int)this.currentPosition - CAPITAL_LETTER_CHAR_OFFSET);
-            if (correctedReflectedOutput > (int)'Z')
+            if (correctedReflectedOutput < (int)'A')
             {
-                correctedReflectedOutput -= ALPHABET_LENGTH;
+                correctedReflectedOutput += ALPHABET_LENGTH;
             }
 
             return (char)correctedReflectedOutput;
