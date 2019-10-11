@@ -6,29 +6,32 @@ namespace Enigma_Console
 {
     class EnigmaPlugboard
     {
-        private readonly int[] output;
+        private Dictionary<char, char> outputMapping;
+        private readonly static int ALPHABET_LENGTH = 26;
+        private readonly static int CAPITAL_LETTER_CHAR_OFFSET = 65;
 
-        public EnigmaPlugboard(int[][] pairings)
+        public EnigmaPlugboard(char[][] pairings)
         {
+            this.outputMapping = new Dictionary<char, char>();
             /* Since the plugboard can be used with any number of pairings (0-13), and the default behavior is to pass
              * each letter unmodified, the output must be first be initialized with this default behavior before
              * applying the pairings */
-
-            for (int i = 0; i <26; i++)
+            for (int i = 0; i < ALPHABET_LENGTH; i += 1)
             {
-                this.output[i] = (i + 1);
+                char currentLetter = (char)(CAPITAL_LETTER_CHAR_OFFSET + i);
+                this.outputMapping.Add(currentLetter, currentLetter);
             }
 
-            foreach (int[] pairing in pairings)
+            foreach (char[] pairing in pairings)
             {
-                this.output[pairing[0] - 1] = pairing[1];
-                this.output[pairing[1] - 1] = pairing[0];
+                this.outputMapping[pairing[0]] = pairing[1];
+                this.outputMapping[pairing[1]] = pairing[0];
             }
         }
 
-        public int GetPlugboardOutput(int input)
+        public char GetPlugboardOutput(char input)
         {
-            return this.output[input - 1];
+            return this.outputMapping[input];
         }
     }
 }
