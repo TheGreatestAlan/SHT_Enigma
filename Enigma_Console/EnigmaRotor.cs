@@ -10,27 +10,28 @@ namespace Enigma_Console
         private Dictionary<char, bool> advancePositions;
         private char currentPosition;
         private readonly static int ALPHABET_LENGTH = 26;
+        private readonly static int CAPITAL_LETTER_CHAR_OFFSET = 65;
 
         public EnigmaRotor(char[] outputOrder, char[] advancePositions)
         {
             this.outputMapping = new Dictionary<char, char>();
             for (int i =0; i < ALPHABET_LENGTH; i += 1)
             {
-                char currentLetter = (char) (65 + i); // C-style character casting
+                char currentLetter = (char) (CAPITAL_LETTER_CHAR_OFFSET + i);
                 this.outputMapping.Add(currentLetter, outputOrder[i]);
             }
 
             this.reflectedOutputMapping = new Dictionary<char, char>();
             for (int i = 0; i < ALPHABET_LENGTH; i += 1)
             {
-                char currentLetter = (char)(65 + i); // C-style character casting
+                char currentLetter = (char)(CAPITAL_LETTER_CHAR_OFFSET + i);
                 this.reflectedOutputMapping.Add(outputOrder[i], currentLetter);
             }
 
             this.advancePositions = new Dictionary<char, bool>();
             for (int i = 0; i < ALPHABET_LENGTH; i += 1)
             {
-                char currentLetter = (char)(65 + i); // C-style character casting
+                char currentLetter = (char)(CAPITAL_LETTER_CHAR_OFFSET + i);
                 if (Array.IndexOf(advancePositions, currentLetter) != -1)
                 {
                     this.advancePositions.Add(currentLetter, true);
@@ -84,10 +85,10 @@ namespace Enigma_Console
              * rotor is set to 'A', then the 'A' output of the adjacent rotor is wired to the 'A' input of this rotor,
              * and no correction is required. However, if this rotor is set to 'D', then the 'A' output of the adjacent
              * rotor is actually wired to the 'D' input of this rotor. */
-            int correctedInput = (int)input + ((int)this.currentPosition - 65);
+            int correctedInput = (int)input + ((int)this.currentPosition - CAPITAL_LETTER_CHAR_OFFSET);
             if (correctedInput > (int)'Z')
             {
-                correctedInput -= 26;
+                correctedInput -= ALPHABET_LENGTH;
             }
 
             return this.outputMapping[(char)correctedInput];
@@ -98,10 +99,10 @@ namespace Enigma_Console
         public char GetReflectedOutput(char reflectedInput)
         {
             /* Just as with the normal input, this must be corrected for the rotor's actual position */
-            int correctedReflectedInput = (int)reflectedInput + ((int)this.currentPosition - 65);
+            int correctedReflectedInput = (int)reflectedInput + ((int)this.currentPosition - CAPITAL_LETTER_CHAR_OFFSET);
             if (correctedReflectedInput > (int)'Z')
             {
-                correctedReflectedInput -= 26;
+                correctedReflectedInput -= ALPHABET_LENGTH;
             }
 
             return this.reflectedOutputMapping[(char)correctedReflectedInput];
