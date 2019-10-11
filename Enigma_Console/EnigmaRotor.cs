@@ -91,7 +91,18 @@ namespace Enigma_Console
                 correctedInput -= ALPHABET_LENGTH;
             }
 
-            return this.outputMapping[(char)correctedInput];
+            char output = this.outputMapping[(char)correctedInput];
+            /* In addition to correcting the input for the rotor's position, the output must also be corrected. This is
+             * because if this rotor's position is 'B', then its 'B' output will be connected to the next rotor's
+             * (uncorrected) 'A' input. */
+
+            int correctedOutput = (int)output - ((int)this.currentPosition - CAPITAL_LETTER_CHAR_OFFSET);
+            if (correctedOutput > (int)'Z')
+            {
+                correctedOutput -= ALPHABET_LENGTH;
+            }
+
+            return (char)correctedOutput;
         }
 
         /*Once the electrical signal has reached the machine's reflector, it is then routed "backwards" through the
@@ -105,7 +116,15 @@ namespace Enigma_Console
                 correctedReflectedInput -= ALPHABET_LENGTH;
             }
 
-            return this.reflectedOutputMapping[(char)correctedReflectedInput];
+            int reflectedOutput = this.reflectedOutputMapping[(char)correctedReflectedInput];
+
+            int correctedReflectedOutput = (int)reflectedOutput - ((int)this.currentPosition - CAPITAL_LETTER_CHAR_OFFSET);
+            if (correctedReflectedOutput > (int)'Z')
+            {
+                correctedReflectedOutput -= ALPHABET_LENGTH;
+            }
+
+            return (char)correctedReflectedOutput;
         }
     }
 }
