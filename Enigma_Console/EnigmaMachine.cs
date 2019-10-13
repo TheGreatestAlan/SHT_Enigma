@@ -18,14 +18,14 @@ namespace Enigma_Console
             this.plugboard = plugboard;
         }
 
-        public char CypherLetter(char letterToBeCyphered)
+        public char CipherLetter(char letterToBeCiphered)
         {
-            // The encyphering/decyphering process for the Enigma works as follows:
+            // The enciphering/deciphering process for the Enigma works as follows:
             // When a key is pressed, the rotors are advanced
             this.AdvanceRotors();
 
             // First, the input letter is passed through the plugboard
-            char plugboardOutput = this.plugboard.GetPlugboardOutput(letterToBeCyphered);
+            char plugboardOutput = this.plugboard.GetPlugboardOutput(letterToBeCiphered);
 
             // Next, the output is passed through the rotors, starting at the right-hand side
             char rotorOutput = plugboardOutput;
@@ -45,9 +45,27 @@ namespace Enigma_Console
             }
 
             // Finally, the signal re-enters the plugboard before reaching the machine's output
-            char cypheredLetter = this.plugboard.GetPlugboardOutput(reflectedRotorOutput);
+            char cipheredLetter = this.plugboard.GetPlugboardOutput(reflectedRotorOutput);
 
-            return cypheredLetter;
+            return cipheredLetter;
+        }
+
+        public String CipherMessage(String message)
+        {
+            String rawMessage = message.ToUpper().Replace(" ", "");
+            StringBuilder cipheredMessage = new StringBuilder("");
+
+            for (int i = 0; i < rawMessage.Length; i += 1)
+            {
+                cipheredMessage.Append(this.CipherLetter(rawMessage[i]));
+                // Standard German protocol with enigma was to add a space every 5 letters to improve readability
+                if ((i + 1) %5 == 0)
+                {
+                    cipheredMessage.Append(" ");
+                }
+            }
+
+            return cipheredMessage.ToString();
         }
         private void AdvanceRotors()
         {
